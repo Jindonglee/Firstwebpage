@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>p519 마무리 문제</title>
+
+    <link href="https://webfontworld.github.io/NexonLv1Gothic/NexonLv1Gothic.css" rel="stylesheet">
+    <link href="https://webfontworld.github.io/ChosunGs/ChosunGs.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+
+        }
+
+        body {
+            background-image: url(img/monje519.jpg);
+            background-size: cover;
+        }
+
+        #wrap {
+            width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .border {
+            width: 100%;
+            height: 250px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .wisesaying {
+            padding: 30px;
+        }
+
+        .wisesaying h3 {
+            padding: 10px 0;
+        }
+
+        .quote {
+            padding: 20px 0;
+            font-family: 'NexonLv1Gothic';
+        }
+
+        .author {
+            padding: 20px 0;
+            font-family: 'ChosunGs';
+            font-weight: bold;
+            
+        }
+        .misetag,
+        .gu_name,
+        .gu_mise {
+            display: inline-block;
+            margin-right: 10px; /* 원하는 간격으로 조절하세요 */
+        }
+    </style>
+</head>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>명언 모음집</title>
+</head>
+
+<body>
+    <div id="wrap">
+        <div class="border">
+            <div class="weather">
+                <div class="misetag">과거 서울 미세먼지 상황</div>
+                <div class="gu_name">명언</div>
+                <div class="gu_mise">-<span></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gu_name = document.querySelector(".gu_name");
+        const gu_mise = document.querySelector(".gu_mise");
+
+        const datawisesaying = () => {
+            // 임시 데이터
+            fetch("http://spartacodingclub.shop/sparta_api/seoulair")
+                .then(res => res.json())
+                .then(datas => {
+
+                    // 데이터 가져오는 부분을 다음과 같이 수정
+                    let weatherData = datas['RealtimeCityAir']['row'];
+                    let Random = Math.trunc(Math.random() * weatherData.length);
+                    let currentWeather = weatherData[Random];
+                    let gu_name_text = currentWeather['MSRSTE_NM'];
+                    let gu_mise_text = currentWeather['IDEX_NM'];
+
+                    gu_name.innerHTML = gu_name_text;
+                    gu_mise.innerHTML = gu_mise_text;
+                });
+        }
+
+        datawisesaying();
+        setInterval(datawisesaying, 3000);
+    </script>
+</body>
+
+</html>
+
+
+</html>
