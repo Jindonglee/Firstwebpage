@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CDN으로 테일윈드 CSS 로드 -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+
+
+    <title>나의 소개</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap');
+
+        h1,
+        h2,
+        p {
+            font-family: 'Nanum Brush Script', cursive;
+        }
+
+        h1 {
+            background-image: url('https://cdn.pixabay.com/photo/2017/10/12/22/17/business-2846221_1280.jpg');
+            background-position: center;
+            background-size: cover;
+
+            color: rgb(14, 13, 13);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 150px;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 150px auto 0px auto;
+        }
+
+        p {
+            font-size: 30px;
+        }
+
+
+        body {
+            background-image: url('https://static.vecteezy.com/system/resources/thumbnails/002/073/237/small_2x/helix-pattern-on-a-white-background-free-vector.jpg');
+            background-position: center;
+            background-size: cover;
+            background-color: rgb(239, 179, 218);
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        header {
+            background-color: #090909;
+            padding: 10px;
+            text-align: right;
+            color: white;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mycard {
+            width: 1200px;
+            margin: 50px 120px 0px auto;
+        }
+
+        /* 카드 크기 고정 */
+        .card {
+            width: 18rem;
+            height: 29rem;
+        }
+        
+        /* 헤드라인을 가로로 배열 */    
+        .misetag,
+        .gu_name,
+        .gu_mise {
+            display: inline-block;
+            margin-right: 10px; 
+        }
+    </style>
+    
+    <script type="module">
+        // Firebase SDK 라이브러리 가져오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeZ-cGnmSWSVfNJ8PGSV2IKxYkz_rMXOg",
+            authDomain: "sparta-20167.firebaseapp.com",
+            projectId: "sparta-20167",
+            storageBucket: "sparta-20167.appspot.com",
+            messagingSenderId: "240108751807",
+            appId: "1:240108751807:web:e39310acdce8d360ce6f0a",
+            measurementId: "G-8GVZXGWQXJ"
+        };
+
+
+        // Firebase 인스턴스 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+
+
+
+        //날씨 변화 폼
+       
+    
+            const gu_name = document.querySelector(".gu_name");
+            const gu_mise = document.querySelector(".gu_mise");
+    
+            const datawisesaying = () => {
+                // 임시 데이터
+                fetch("http://spartacodingclub.shop/sparta_api/seoulair")
+                    .then(res => res.json())
+                    .then(datas => {
+                        let weatherData = datas['RealtimeCityAir']['row']; 
+                        let Random = Math.trunc(Math.random() * weatherData.length); //데이터를 랜덥하게 뽑는다
+                        let currentWeather = weatherData[Random];
+                        let gu_name_text = currentWeather['MSRSTE_NM']; //const 로 gu_name을 선언했기 때문에 gu_name_text로 이름을 변경했다
+                        let gu_mise_text = currentWeather['IDEX_NM'];   // 마찬가지
+    
+                        gu_name.innerHTML = gu_name_text;
+                        gu_mise.innerHTML = gu_mise_text;
+                    });
+            }
+    
+            datawisesaying();
+            setInterval(datawisesaying, 3000); //3초당 한번 씩 변경
+        
+
+
+        //내 프로필 누르면 프로필 카드를 보여줌
+        $("#Myprofile").click(async function () {
+            $('#card').toggle();
+        })
+        //프로필 카드 숨기기
+        $('#card').hide();
+
+        //방명록 버튼
+        $("#guestbookbtn").click(async function () {
+            $('#guestbook').toggle();
+        })
+
+        //방명록 기록 폼 숨기기
+        $('#guestbook').hide();
+
+
+        //방명록 저장 기능
+        $("#savebtn").click(async function () {
+            let name = $('#name').val();
+            let star = $('#star').val();
+            let comment = $('#comment').val();
+
+            let doc = {
+                'name': name,
+                'star': star,
+                'comment': comment
+            };
+            await addDoc(collection(db, "guestbook"), doc);
+            alert('저장 완료');
+            window.location.reload();
+        })
+        //방명록 출력
+        let docs = await getDocs(collection(db, "guestbook"));
+        docs.forEach((doc) => {
+            let row = doc.data();
+            console.log(row);
+            let name = row['name'];
+            let star = row['star'];
+            let comment = row['comment'];
+
+            let temp_html =
+                `<div>
+                    <div class="my-20 mx-60 flex h-32">
+                        <!-- 첫 번째 칸 -->
+                        <div class="w-1/5 flex items-center bg-black rounded-l-md overflow-hidden">
+                            <!-- 이름 입력란 -->
+                            <div class="pl-16 text-white text-lg text-justify">
+                                <p>${name}</p>
+                            </div>
+                        </div>
+                
+                        <div class="flex-1 items-center bg-white">
+                            <!-- 별점과 내용을 담을 컨테이너 -->
+                            <div class="flex flex-col">
+                              <!-- 별점 -->
+                              <div class="pt-2 pl-4 pr-2 pb-2 text-lg">
+                                ${star}
+                              </div>
+                        
+                              <!-- 검은 줄 -->
+                              <div class="h-px bg-black"></div>
+                        
+                              <!-- 내용 -->
+                              <div class="p-3 text-lg">
+                                ${comment}
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                </div>`;
+            $('#guestbooks').append(temp_html);
+        });
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="weather">
+                <div class="misetag">과거 서울 미세먼지 상황 >></div>
+                <div class="gu_name"> :</div>
+                <div class="gu_mise">-<span></span></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h1>나의 소개</h1>
+    </main>
+
+    <div class="my-10">
+        <div class="relative round-lg flex justify-center">
+            <div>                
+                    <p class="text-2xl font-color-red font-bold">아래에 밑줄친 버튼들을 눌러주세요</p>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="my-10">
+        <div class="relative round-lg flex justify-center">
+            <div>
+                <button id="Myprofile">
+                    <h2 class="text-7xl font-bold underline">프로필</h2>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!--프로필 카드란-->
+    <div class="mycard">
+        <div id="card" class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="https://img-cf.kurly.com/shop/data/goodsview/20210407/gv10000170757_1.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">나의 프로필</h5>
+                        <p class="card-text">본인에 대해 무관심한 남자
+                        </p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">이름 : 이진동</li>
+                        <li class="list-group-item">체중 : 83</li>
+                        <li class="list-group-item">MBTI : INTP</li>
+                        <li class="list-group-item">싫어하는 음식 : 유부초밥</li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">개발자로서의 목표</h5>
+                        <p class="card-text"> 커뮤니케이션이 잘 되는 유연한 사고의 개발자
+                        </p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">솔직히</li>
+                        <li class="list-group-item">힘들듯</li>
+                        <li class="list-group-item">하지만 노력하자!</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="http://images.gmanews.tv/webpics/2020/01/640_Black_Mamba_Forever_by_Celeste_Lecaroz_2020_01_28_18_07_02.jpg"
+                        class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">취미는 NBA 시청!</h5>
+                        <p class="card-text">Mamba Mentality로 취업까지!</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-center">
+        <button id="guestbookbtn">
+            <h2 class="text-7xl font-bold underline">방명록</h2>
+        </button>
+    </div>
+
+    <div class="my-20" id="guestbook">
+        <div class="relative rounded-xl overflow-auto p-8 flex justify-center items-center">
+            <div class="relative bg-blue-200 border-4 border-blue-500 p-4 w-96 rounded-md">
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="name">이름을 적어주세요</label>
+                    <input type="email" class="form-control" id="name" placeholder="이름">
+                </div>
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">별점</label>
+                    <select class="form-select" id="star">
+                        <option selected>별점선택</option>
+                        <option value="⭐">⭐</option>
+                        <option value="⭐⭐">⭐⭐</option>
+                        <option value="⭐⭐⭐">⭐⭐⭐</option>
+                        <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+                        <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="comment">하실 말씀!</label>
+                    <textarea class="form-control" id="comment" rows="3"></textarea>
+                </div>
+                <div class="grid justify-items-center">
+                    <button id="savebtn" class="rounded-lg bg-blue-500 border-2 border-blue-700 pt-3 pr-4 pl-4">
+                        <p class="font-bold">
+                            save
+                        </p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--방명록 폼 테일윈드로 만들었다. 이전 것을 보여주고 싶지 않아서 주석처리 해놓았다.-->
+    <div id="guestbooks">
+        <!-- <div class="my-20 mx-60 flex h-32">
+           
+            <div class="w-1/5 flex items-center bg-black rounded-l-md overflow-hidden">
+                
+                <div class="pl-16 text-white text-lg text-justify">
+                    <p>이름임</p>
+                </div>
+            </div>
+    
+            <div class="flex-1 items-center bg-white">
+                
+                <div class="flex flex-col">
+                 
+                  <div class="pt-2 pl-4 pr-2 pb-2 text-lg">
+                    별점
+                  </div>
+            
+                 
+                  <div class="h-px bg-black"></div>
+            
+                  <div class="p-3 text-lg">
+                    내용
+                  </div>
+                </div>
+              </div>
+        </div> -->
+    </div>
+
+
+
+</body>
+
+</html>
