@@ -130,7 +130,7 @@
 
         const datawisesaying = () => {
             // 임시 데이터
-            fetch(url)
+            fetch(`https://cors-anywhere.herokuapp.com/${url}`)
                 .then(res => res.json())
                 .then(datas => {
                     let weatherData = datas['RealtimeCityAir']['row'];
